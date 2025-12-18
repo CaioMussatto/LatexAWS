@@ -15,13 +15,33 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Sidebar */
 .sidebar {
     width: 300px;
     background-color: var(--bg-sidebar) !important;
     border-right: 1px solid #333;
     z-index: 1000;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    height: 100vh;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: var(--bg-sidebar);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-purple);
 }
 
 .title-purple { color: var(--accent-purple); font-weight: 800; }
@@ -35,7 +55,6 @@ body {
     display: block; 
 }
 
-/* Workspace */
 .workspace {
     flex-grow: 1;
     overflow-y: auto;
@@ -69,10 +88,8 @@ body {
     box-shadow: 0 0 50px rgba(0,0,0,0.9);
 }
 
-/* Elementos e Lixeira */
 .element { position: absolute; cursor: move; box-sizing: border-box; }
 
-/* A "Ponte Invisível": Área de colisão acima do elemento */
 .element::before {
     content: "";
     position: absolute;
@@ -122,13 +139,11 @@ body {
     display: flex !important;
 }
 
-/* Conteúdos */
 .text-content { width: 100%; height: 100%; color: black; outline: none; padding: 5px; word-break: break-all; overflow: hidden; }
 .image-box img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
 .table-element table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
 .table-element td { border: 1px solid #ccc; color: black; text-align: center; padding: 5px; }
 
-/* Botões UI */
 .btn-purple-action { background: var(--accent-purple); color: white; border: none; font-weight: bold; }
 .btn-purple-action:disabled { background: #555; cursor: not-allowed; }
 .btn-outline-purple { border: 1px solid var(--accent-purple); color: var(--accent-purple); }

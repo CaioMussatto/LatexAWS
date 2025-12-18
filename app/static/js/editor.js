@@ -10,7 +10,7 @@ function addNewPage() {
     const container = document.getElementById('pages-container');
     const wrapper = document.createElement('div');
     wrapper.className = 'page-wrapper';
-    wrapper.innerHTML = `<button class="delete-page-btn" onclick="this.parentElement.remove()">Excluir Página</button><div class="canvas-white"></div>`;
+    wrapper.innerHTML = `<button class="delete-page-btn" onclick="this.parentElement.remove()">Delete Page</button><div class="canvas-white"></div>`;
     container.appendChild(wrapper);
 }
 
@@ -22,15 +22,18 @@ function makeElementInteractive(el, isImage = false) {
         if (selectedElement) selectedElement.classList.remove('selected');
         selectedElement = el;
         el.classList.add('selected');
+        
         if (e.target.closest('.resizer') || e.target.closest('.delete-btn') || e.target.tagName === 'TD') return;
         
         let rect = el.getBoundingClientRect();
         let sX = e.clientX - rect.left, sY = e.clientY - rect.top;
+        
         function move(e) {
             let c = el.closest('.canvas-white').getBoundingClientRect();
             el.style.left = (e.pageX - c.left - sX) + 'px';
             el.style.top = (e.pageY - c.top - sY) + 'px';
         }
+        
         document.addEventListener('mousemove', move);
         document.onmouseup = () => document.removeEventListener('mousemove', move);
     });
@@ -41,7 +44,8 @@ function makeElementInteractive(el, isImage = false) {
         function resize(e) {
             let w = sW + (e.clientX - sX), h = sH + (e.clientY - sY);
             if (isImage && isShiftPressed) h = w / r;
-            el.style.width = Math.max(30, w) + 'px'; el.style.height = Math.max(30, h) + 'px';
+            el.style.width = Math.max(30, w) + 'px';
+            el.style.height = Math.max(30, h) + 'px';
         }
         document.addEventListener('mousemove', resize);
         document.onmouseup = () => document.removeEventListener('mousemove', resize);
@@ -54,13 +58,22 @@ function makeElementInteractive(el, isImage = false) {
     });
 }
 
+function createBase(type) {
+    const el = document.createElement('div');
+    el.className = `element ${type}`;
+    el.style.left = '50px'; el.style.top = '50px';
+    el.innerHTML = `<div class="resizer"></div><button class="delete-btn">${trashIcon}</button>`;
+    return el;
+}
+
 function addTextBox() {
     const box = createBase('text-box');
     box.style.width = '200px'; box.style.height = '60px';
     const c = document.createElement('div');
     c.className = 'text-content'; c.contentEditable = true;
-    c.innerText = 'Texto...'; box.prepend(c);
-    document.querySelectorAll('.canvas-white').item(document.querySelectorAll('.canvas-white').length-1).appendChild(box);
+    c.innerText = 'Type here...'; box.prepend(c);
+    const canvases = document.querySelectorAll('.canvas-white');
+    canvases[canvases.length - 1].appendChild(box);
     makeElementInteractive(box);
 }
 
@@ -68,21 +81,17 @@ function addTable() {
     const box = createBase('table-element');
     box.style.width = '300px'; box.style.height = '80px';
     let h = '<table>';
-    for(let r=0; r<document.getElementById('tableRows').value; r++) {
-        h += '<tr>'; for(let c=0; c<document.getElementById('tableCols').value; c++) h += '<td contenteditable="true"></td>';
+    const rows = document.getElementById('tableRows').value;
+    const cols = document.getElementById('tableCols').value;
+    for(let r=0; r<rows; r++) {
+        h += '<tr>'; 
+        for(let c=0; c<cols; c++) h += '<td contenteditable="true"></td>';
         h += '</tr>';
     }
     box.insertAdjacentHTML('afterbegin', h + '</table>');
-    document.querySelectorAll('.canvas-white').item(document.querySelectorAll('.canvas-white').length-1).appendChild(box);
+    const canvases = document.querySelectorAll('.canvas-white');
+    canvases[canvases.length - 1].appendChild(box);
     makeElementInteractive(box);
-}
-
-function createBase(type) {
-    const el = document.createElement('div');
-    el.className = `element ${type}`;
-    el.style.left = '50px'; el.style.top = '50px';
-    el.innerHTML = `<div class="resizer"></div><button class="delete-btn">${trashIcon}</button>`;
-    return el;
 }
 
 function handleImage(e) {
@@ -93,7 +102,8 @@ function handleImage(e) {
         img.src = ev.target.result;
         img.onload = () => { box.style.width = '200px'; box.style.height = (200 * (img.naturalHeight / img.naturalWidth)) + 'px'; };
         box.prepend(img);
-        document.querySelectorAll('.canvas-white').item(document.querySelectorAll('.canvas-white').length-1).appendChild(box);
+        const canvases = document.querySelectorAll('.canvas-white');
+        canvases[canvases.length - 1].appendChild(box);
         makeElementInteractive(box, true);
     };
     reader.readAsDataURL(e.target.files[0]);
@@ -101,11 +111,13 @@ function handleImage(e) {
 
 async function generatePDF() {
     const btn = document.getElementById('generateBtn');
+    const btnText = document.getElementById('btnText');
     btn.disabled = true;
-    document.getElementById('btnText').innerText = "GERANDO...";
+    btnText.innerText = "PROCESSING...";
 
     const pxToMm = (px) => Math.round(parseFloat(px || 0) / 3.78);
     const pages = [];
+    
     document.querySelectorAll('.canvas-white').forEach(canvas => {
         const elements = [];
         canvas.querySelectorAll('.element').forEach(el => {
@@ -116,23 +128,43 @@ async function generatePDF() {
                 type = 'table';
                 content = Array.from(el.querySelectorAll('tr')).map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText));
             }
-            elements.push({ type, content, x: pxToMm(el.style.left), y: pxToMm(el.style.top), w: pxToMm(el.style.width), h: pxToMm(el.style.height) });
+            elements.push({ 
+                type, content, 
+                x: pxToMm(el.style.left), y: pxToMm(el.style.top), 
+                w: pxToMm(el.style.width), h: pxToMm(el.style.height) 
+            });
         });
         pages.push({ elements });
     });
 
     try {
-        const r = await fetch('/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pages }) });
+        const r = await fetch('/generate', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ pages }) 
+        });
         const res = await r.json();
+        
         if (res.pdf_url) {
             setTimeout(() => {
-                const a = document.createElement('a'); a.href = res.pdf_url; a.download = "";
-                document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            }, 800);
+                const a = document.createElement('a');
+                a.href = res.pdf_url;
+                a.download = "";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                btnText.innerText = "DOWNLOAD PDF";
+                btn.disabled = false;
+            }, 1000);
+        } else {
+            alert("Error: " + res.message);
+            btn.disabled = false;
+            btnText.innerText = "DOWNLOAD PDF";
         }
-    } finally {
+    } catch (err) {
+        alert("Server connection error.");
         btn.disabled = false;
-        document.getElementById('btnText').innerText = "BAIXAR PDF";
+        btnText.innerText = "DOWNLOAD PDF";
     }
 }
 
