@@ -1,0 +1,56 @@
+body {
+    margin: 0; display: flex; font-family: 'Inter', sans-serif;
+    background-color: #eef0f3; height: 100vh; overflow: hidden;
+}
+
+.toolbar {
+    width: 260px; background: #1a1a1a; color: white;
+    padding: 25px; box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+}
+
+.instructions { margin: 20px 0; color: #888; line-height: 1.5; }
+
+.workspace {
+    flex-grow: 1; display: flex; justify-content: center;
+    padding: 20px; overflow: auto; background: #2c2c2c;
+}
+
+.canvas {
+    width: 210mm; height: 297mm; background: white;
+    position: relative; flex-shrink: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.element {
+    position: absolute; border: 1px solid transparent;
+    cursor: move; min-width: 30px; min-height: 30px;
+    box-sizing: border-box;
+}
+
+.element:hover, .element.selected {
+    border: 1px solid #007bff;
+}
+
+.text-box { padding: 8px; outline: none; word-wrap: break-word; }
+
+.image-box img { width: 100%; height: 100%; pointer-events: none; }
+
+/* Resize Handle */
+.resizer {
+    width: 10px; height: 10px; background: #007bff;
+    position: absolute; right: -5px; bottom: -5px;
+    cursor: nwse-resize; border-radius: 50%;
+    display: none;
+}
+
+.element:hover .resizer, .element.selected .resizer { display: block; }
+
+button {
+    width: 100%; padding: 12px; margin-bottom: 12px;
+    cursor: pointer; border: none; border-radius: 6px;
+    background: #333; color: white; transition: 0.2s;
+}
+
+button:hover { background: #444; }
+
+.btn-generate { background: #007bff; font-weight: bold; margin-top: 30px; }
+.btn-generate:hover { background: #0056b3; }

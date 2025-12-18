@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LatexAWS | Pro Editor</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="toolbar">
+        <h2>LatexAWS</h2>
+        <p>Design your document</p>
+        <hr>
+        <button onclick="addTextBox()">+ Add Text</button>
+        <button onclick="triggerImageUpload()">+ Add Image</button>
+        <input type="file" id="imageInput" style="display:none" accept="image/*" onchange="handleImage(event)">
+        
+        <div class="instructions">
+            <small>Click to edit. Drag to move.<br>Use handles to resize.<br>Press <b>Delete</b> to remove.</small>
+        </div>
+        
+        <button onclick="generatePDF()" class="btn-generate">Download PDF</button>
+    </div>
+    
+    <div class="workspace">
+        <div id="canvas" class="canvas"></div>
+    </div>
+
+    <script src="/static/js/editor.js"></script>
+</body>
+</html>

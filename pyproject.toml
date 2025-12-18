@@ -1,0 +1,22 @@
+[project]
+name = "LatexAWS"
+version = "0.1.0"
+description = "Serverless LaTeX CV and Article generator with AI"
+authors = [
+    { name = "Caio Mussatto", email = "Caio.mussatto@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.0.0",
+    "pylatex>=1.4.1",
+    "python-dotenv>=1.0.0",
+    "gunicorn>=21.2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
