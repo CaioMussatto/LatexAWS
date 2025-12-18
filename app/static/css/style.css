@@ -1,9 +1,7 @@
-/* Palette: Deep Dark (#0a0a0a), Sidebar-Black (#1a1a1a), Electric-Purple (#a044ff) */
 :root {
     --bg-main: #0a0a0a;
     --bg-sidebar: #1a1a1a;
     --accent-purple: #a044ff;
-    --canvas-white: #ffffff;
     --text-light: #e0e0e0;
 }
 
@@ -17,10 +15,9 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Sidebar Estilizada */
+/* Sidebar */
 .sidebar {
     width: 300px;
-    height: 100vh;
     background-color: var(--bg-sidebar) !important;
     border-right: 1px solid #333;
     z-index: 1000;
@@ -33,7 +30,6 @@ body {
     font-size: 0.7rem; 
     font-weight: 800; 
     text-transform: uppercase; 
-    letter-spacing: 1.5px; 
     margin-top: 20px;
     margin-bottom: 10px; 
     display: block; 
@@ -49,16 +45,9 @@ body {
     align-items: center;
 }
 
-#pages-container {
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-}
+#pages-container { display: flex; flex-direction: column; gap: 80px; }
 
-.page-wrapper {
-    position: relative;
-}
-
+.page-wrapper { position: relative; }
 .delete-page-btn {
     position: absolute;
     top: -40px;
@@ -69,7 +58,6 @@ body {
     padding: 5px 12px;
     border-radius: 4px;
     font-size: 11px;
-    font-weight: bold;
     cursor: pointer;
 }
 
@@ -81,15 +69,10 @@ body {
     box-shadow: 0 0 50px rgba(0,0,0,0.9);
 }
 
-/* --- ELEMENTOS E LIXEIRA (O CORAÇÃO DO FIX) --- */
+/* Elementos e Lixeira */
+.element { position: absolute; cursor: move; box-sizing: border-box; }
 
-.element {
-    position: absolute;
-    cursor: move;
-    box-sizing: border-box;
-}
-
-/* Área de segurança invisível acima do elemento para a lixeira não sumir */
+/* A "Ponte Invisível": Área de colisão acima do elemento */
 .element::before {
     content: "";
     position: absolute;
@@ -101,9 +84,7 @@ body {
     z-index: -1;
 }
 
-.element.selected {
-    outline: 2px solid var(--accent-purple);
-}
+.element.selected { outline: 2px solid var(--accent-purple); }
 
 .delete-btn {
     position: absolute;
@@ -115,11 +96,11 @@ body {
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    display: none; /* Escondido por padrão */
+    display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 9999; 
+    z-index: 9999;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
@@ -134,50 +115,21 @@ body {
     cursor: nwse-resize;
     display: none;
     border-radius: 50%;
-    z-index: 9999;
 }
 
-/* Se o mouse estiver sobre o elemento OU se o elemento estiver selecionado */
-.element:hover .delete-btn, 
-.element:hover .resizer,
-.element.selected .delete-btn, 
-.element.selected .resizer {
+.element:hover .delete-btn, .element:hover .resizer,
+.element.selected .delete-btn, .element.selected .resizer {
     display: flex !important;
 }
 
-/* Conteúdo dos Elementos */
-.text-content {
-    width: 100%;
-    height: 100%;
-    color: black;
-    outline: none;
-    padding: 5px;
-    word-break: break-all;
-    overflow: hidden;
-}
-
-.image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-    pointer-events: none;
-}
-
-.table-element table {
-    width: 100%;
-    height: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.table-element td {
-    border: 1px solid #ccc;
-    color: black;
-    text-align: center;
-    padding: 5px;
-}
+/* Conteúdos */
+.text-content { width: 100%; height: 100%; color: black; outline: none; padding: 5px; word-break: break-all; overflow: hidden; }
+.image-box img { width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+.table-element table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+.table-element td { border: 1px solid #ccc; color: black; text-align: center; padding: 5px; }
 
 /* Botões UI */
 .btn-purple-action { background: var(--accent-purple); color: white; border: none; font-weight: bold; }
+.btn-purple-action:disabled { background: #555; cursor: not-allowed; }
 .btn-outline-purple { border: 1px solid var(--accent-purple); color: var(--accent-purple); }
 .border-purple { border-color: var(--accent-purple) !important; }
