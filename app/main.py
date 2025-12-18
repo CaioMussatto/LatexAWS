@@ -1,15 +1,17 @@
 import os
 import uuid
 import base64
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from app.engine.generator import LatexGenerator
 
 app = Flask(__name__)
 
-OUTPUT_DIR = os.path.join(os.getcwd(), "output")
-UPLOAD_DIR = os.path.join(os.getcwd(), "temp_uploads")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+# Diretórios de trabalho
+UPLOAD_FOLDER = 'temp_uploads'
+OUTPUT_FOLDER = 'output'
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route('/')
 def index():
@@ -20,47 +22,62 @@ def generate():
     try:
         data = request.json
         elements = data.get('elements', [])
-        job_id = str(uuid.uuid4())
-        base_path = os.path.join(OUTPUT_DIR, job_id)
         
-        gen = LatexGenerator(base_path)
-        temp_files = []
+        # Gera nome único para o arquivo não sobrescrever outros designs
+        job_id = str(uuid.uuid4())
+        pdf_filename = f"purple_design_{job_id}"
+        pdf_full_path = os.path.join(OUTPUT_FOLDER, pdf_filename)
+        
+        gen = LatexGenerator(pdf_full_path)
 
         for el in elements:
-            x, y, width = int(el['x']), int(el['y']), int(el['width'])
+            # Dimensões exatas em mm (já convertidas pelo JS)
+            x, y = el['x'], el['y']
+            w, h = el['width'], el['height']
             
             if el['type'] == 'text':
-                gen.add_text_box(el['content'], x, y, width)
+                gen.add_text_box(
+                    content=el['content'],
+                    x=x, y=y, width=w, height=h,
+                    font=el.get('font', 'serif')
+                )
             
-            elif el['type'] == 'image' and 'content' in el:
-                # Processa imagem Base64 vinda do frontend
-                header, encoded = el['content'].split(",", 1)
-                ext = header.split('/')[1].split(';')[0]
-                img_filename = f"img_{uuid.uuid4()}.{ext}"
-                img_path = os.path.join(UPLOAD_DIR, img_filename)
-                
-                with open(img_path, "wb") as f:
-                    f.write(base64.b64decode(encoded))
-                
-                temp_files.append(img_path)
-                gen.add_image(img_path, x, y, width)
+            elif el['type'] == 'image':
+                try:
+                    # Decodifica a imagem do canvas para arquivo físico
+                    header, encoded = el['content'].split(",", 1)
+                    img_data = base64.b64decode(encoded)
+                    
+                    img_name = f"img_{uuid.uuid4().hex}.png"
+                    img_path = os.path.join(UPLOAD_FOLDER, img_name)
+                    
+                    with open(img_path, "wb") as f:
+                        f.write(img_data)
+                    
+                    # Passa largura e altura livres para o motor
+                    gen.add_image(img_path, x, y, w, h)
+                except Exception as img_err:
+                    print(f"Erro ao salvar imagem: {img_err}")
+                    continue
 
-        pdf_path = gen.generate_pdf()
+        generated_file = gen.generate_pdf()
         
-        # Limpa imagens temporárias (opcional, mas recomendado)
-        # for f in temp_files: os.remove(f)
-
-        if pdf_path and os.path.exists(pdf_path):
-            return jsonify({"status": "success", "pdf_url": f"/download/{job_id}"})
-        return jsonify({"status": "error", "message": "Falha na geração"}), 500
+        if generated_file:
+            return jsonify({
+                "pdf_url": f"/download/{os.path.basename(generated_file)}"
+            })
+        
+        return jsonify({"message": "Falha na geração do PDF"}), 500
 
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        print(f"Erro Crítico: {e}")
+        return jsonify({"message": str(e)}), 500
 
-@app.route('/download/<job_id>')
-def download(job_id):
-    path = os.path.join(OUTPUT_DIR, f"{job_id}.pdf")
-    return send_file(path, as_attachment=True)
+@app.route('/download/<filename>')
+def download(filename):
+    # Rota para baixar o PDF gerado
+    return send_from_directory(os.path.abspath(OUTPUT_FOLDER), filename)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Porta 8080 configurada
     app.run(host='0.0.0.0', port=8080, debug=True)

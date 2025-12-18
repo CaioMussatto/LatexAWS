@@ -3,29 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LatexAWS | Pro Editor</title>
+    <title>LatexAWS | Purple Edition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
-    <div class="toolbar">
-        <h2>LatexAWS</h2>
-        <p>Design your document</p>
-        <hr>
-        <button onclick="addTextBox()">+ Add Text</button>
-        <button onclick="triggerImageUpload()">+ Add Image</button>
-        <input type="file" id="imageInput" style="display:none" accept="image/*" onchange="handleImage(event)">
-        
-        <div class="instructions">
-            <small>Click to edit. Drag to move.<br>Use handles to resize.<br>Press <b>Delete</b> to remove.</small>
+<body class="bg-page">
+    <div class="sidebar d-flex flex-column p-3 text-white">
+        <div class="brand-area mb-4">
+            <h2 class="h4 mb-0 fw-bold title-purple">LatexAWS</h2>
+            <p class="small text-muted">Cloud Design System</p>
+        </div>
+
+        <div class="tool-section mb-4">
+            <label class="section-label">Typography</label>
+            <div class="input-group">
+                <button class="btn btn-outline-purple btn-sm w-75" onclick="addTextBox()">
+                    Add Text Box
+                </button>
+                <select id="fontSelector" class="form-select form-select-sm bg-dark text-white border-purple">
+                    <option value="serif">Serif</option>
+                    <option value="sans-serif">Sans</option>
+                    <option value="monospace">Mono</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="tool-section mb-4">
+            <label class="section-label">Visuals</label>
+            <button class="btn btn-outline-purple btn-sm w-100" onclick="triggerImageUpload()">
+                Add Image Block
+            </button>
+            <input type="file" id="imageInput" style="display:none" accept="image/*" onchange="handleImage(event)">
+        </div>
+
+        <div class="status-card mt-auto p-3 rounded">
+            <div class="d-flex align-items-center mb-2">
+                <div class="dot bg-purple me-2"></div>
+                <span class="small">Lógica: Redimensionamento Livre</span>
+            </div>
+            <p class="x-small text-muted mb-0">Imagens e textos agora seguem controle total de X e Y no canvas.</p>
         </div>
         
-        <button onclick="generatePDF()" class="btn-generate">Download PDF</button>
+        <button onclick="generatePDF()" class="btn btn-purple-action w-100 mt-3 py-2 shadow">
+            GENERATE PDF
+        </button>
     </div>
     
-    <div class="workspace">
-        <div id="canvas" class="canvas"></div>
-    </div>
+    <main class="workspace d-flex justify-content-center align-items-start p-5">
+        <div id="canvas" class="canvas-white">
+            </div>
+    </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/editor.js"></script>
 </body>
 </html>
