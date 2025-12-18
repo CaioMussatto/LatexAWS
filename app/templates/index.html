@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LatexAWS | Purple Edition</title>
+    <title>LatexAWS | Purple Pro Designer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
@@ -11,14 +11,14 @@
     <div class="sidebar d-flex flex-column p-3 text-white">
         <div class="brand-area mb-4">
             <h2 class="h4 mb-0 fw-bold title-purple">LatexAWS</h2>
-            <p class="small text-muted">Cloud Design System</p>
+            <p class="small text-muted">Cloud PDF Engine</p>
         </div>
 
         <div class="tool-section mb-4">
             <label class="section-label">Typography</label>
             <div class="input-group">
                 <button class="btn btn-outline-purple btn-sm w-75" onclick="addTextBox()">
-                    Add Text Box
+                    Add Text
                 </button>
                 <select id="fontSelector" class="form-select form-select-sm bg-dark text-white border-purple">
                     <option value="serif">Serif</option>
@@ -31,7 +31,7 @@
         <div class="tool-section mb-4">
             <label class="section-label">Visuals</label>
             <button class="btn btn-outline-purple btn-sm w-100" onclick="triggerImageUpload()">
-                Add Image Block
+                Add Image
             </button>
             <input type="file" id="imageInput" style="display:none" accept="image/*" onchange="handleImage(event)">
         </div>
@@ -39,13 +39,14 @@
         <div class="status-card mt-auto p-3 rounded">
             <div class="d-flex align-items-center mb-2">
                 <div class="dot bg-purple me-2"></div>
-                <span class="small">Lógica: Redimensionamento Livre</span>
+                <span class="fw-bold small">Pro Tip:</span>
             </div>
-            <p class="x-small text-muted mb-0">Imagens e textos agora seguem controle total de X e Y no canvas.</p>
+            <p class="x-small text-muted mb-0">Segure <b>SHIFT</b> ao redimensionar imagens para manter a proporção original.</p>
         </div>
         
-        <button onclick="generatePDF()" class="btn btn-purple-action w-100 mt-3 py-2 shadow">
-            GENERATE PDF
+        <button id="generateBtn" onclick="generatePDF()" class="btn btn-purple-action w-100 mt-3 py-2 shadow d-flex align-items-center justify-content-center">
+            <span id="btnText">GENERATE PDF</span>
+            <div id="btnLoader" class="spinner-border spinner-border-sm ms-2 d-none" role="status"></div>
         </button>
     </div>
     
